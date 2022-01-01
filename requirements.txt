@@ -1,0 +1,3 @@
+networkx
+streamlit-force-graph-simulator
+numpy
