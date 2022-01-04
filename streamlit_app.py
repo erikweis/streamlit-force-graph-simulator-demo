@@ -5,6 +5,7 @@ import streamlit as st
 import networkx as nx
 import numpy as np
 from networkx.readwrite import json_graph
+import json
 
 import random
 from collections import Counter
@@ -70,15 +71,22 @@ def callback_avm():
 
 st.title("Streamlit Force Graph Simulator Demo")
 
-text = "".join("""
-With the traditional voter model, a random node takes the state of one of its neighbors at each time step. With the adaptive voter model
-nodes rewire an edge from a node with an opposite opinion, with probability p. Otherwise, nodes take the state of a neighbor, with probability 1-p.
-""".split("\n"))
+st.markdown("""Creating network visualizations from python can be tricky with existing tools. Fortunately,
+javascript libraries like d3 have very good network visualization tools, such as force-directed-layouts.
+However, these libraries are inaccessible to those who don't regularly deal with front-end code. The streamlit-force-graph-simulator
+component is designed to allow making force-directed visualizations easy from python.
+""".replace("\n",' '))
 
-st.markdown(text)
+st.markdown('Documentation can be found at [here](https://github.com/erikweis/streamlit-force-graph-simulator).')
 
 ######## Adaptive Voter Model
 st.header("Adaptive Voter Model")
+
+st.markdown("""
+With the traditional voter model, a random node takes the state of one of its neighbors at each time step. With the adaptive voter model
+nodes rewire an edge from a node with an opposite opinion, with probability p. Otherwise, nodes take the state of a neighbor, with probability 1-p.
+""".replace("\n",' '))
+
 
 # adaptive voter model simulation
 F = initialize_avm_simulation()
@@ -114,11 +122,11 @@ st_graph(
 
 st.header("Preferential Attachement")
 
-text = "".join("""
+
+st.markdown("""
 With preferential attachement, nodes are added to the network one at a time. And each are 
 connected to $n$ new nodes.
-""".split("\n"))
-st.markdown(text)
+""".replace("\n",''))
 
 
 num_seed_nodes = 5
@@ -156,64 +164,70 @@ st_graph(
     key="graph_pa"
 )
 
+######### Static Graphs ###########
 
-text_test_all_methods = "".join("""
-Test all methods.""".split("\n"))
+st.header('Visualizing Static Graphs')
 
-st.markdown(text_test_all_methods)
+st.markdown("""We can also use the streamlit force graph component to visualize elaborate networks as force-directed graphs.
+This can be done by not passing an events list to the component.""".replace("\n"," "))
 
-G = nx.erdos_renyi_graph(5,0.8,directed=True)
-F = ForceGraphSimulation(G)
+st.markdown("""This graph shows trust ratings between users on Bitcoin OTC. 
+The edges are signed and weighted.""".replace("\n",' '))
 
-F.add_node(5)
-F.add_edge(4,5)
-F.add_edge(3,5)
-F.save_event()
+with open('bitcoinc.json','r') as f:
+    jg = json.load(f)
 
-F.add_node(6)
-F.add_edge(5,6)
-F.save_event()
-
-F.remove_node(5)
-F.save_event()
-
-props = {
-    'height':300,
-    'cooldownTicks':1000 ,
-    'linkDirectionalArrowLength':3.5,
-    'linkDirectionalArrowRelPos':1
-}
-
-w2 = st_graph(
-    F.initial_graph_json,
-    F.events,
-    time_interval = 1000,
-    graphprops=props,
-    continuous_play = True,
-    directed = True,
-    key='my_graph'
+st_graph(
+    jg,
+    graphprops = {
+        'height':600,
+        'linkWidth':'width',
+        #'linkColor':'color'
+        },
+    view='3D',
+    key='graph_static'
 )
 
 
-text_test_new_graph = "".join("""
-With the traditional voter model, a random node takes the state of one of its neighbors at each time step. With the adaptive voter model
-nodes rewire an edge from a node with an opposite opinion, with probability p. Otherwise, nodes take the state of a neighbor, with probability 1-p.
-""".split("\n"))
+##############
 
-st.markdown(text_test_new_graph)
+st.header('Continuous Play')
 
-G1 = json_graph.node_link_data(nx.barbell_graph(5,1))
-events2 = []
+st.markdown("""We can also visualize directed graphs, or ask the simulation to play continuously.
+The code for this simple visualization is shown below.""".replace("\n",' '))
 
-for i in range(2,5):
-    G_t = json_graph.node_link_data(nx.barbell_graph(5,i))
-    events2.append([{'event_type':'new_graph','graph':G_t}])
+with st.echo(code_location='below'):
+    G = nx.erdos_renyi_graph(5,0.8,directed=True)
+    F = ForceGraphSimulation(G)
 
-w2 = st_graph(
-    G1,
-    events2,
-    time_interval = 2000,
-    graphprops={ 'height':300 },
-    key='graph2'
-)
+    F.add_node(5)
+    F.add_edge(4,5)
+    F.add_edge(3,5)
+    F.save_event()
+
+    F.add_node(6)
+    F.add_edge(5,6)
+    F.save_event()
+
+    F.remove_node(5)
+    F.save_event()
+
+    props = {
+        'height':300,
+        'cooldownTicks':1000 ,
+        'linkDirectionalArrowLength':3.5,
+        'linkDirectionalArrowRelPos':1
+    }
+
+    st_graph(
+        F.initial_graph_json,
+        F.events,
+        time_interval = 1000,
+        graphprops=props,
+        continuous_play = True,
+        directed = True,
+        key='my_graph'
+    )
+
+
 
