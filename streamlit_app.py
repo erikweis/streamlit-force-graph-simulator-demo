@@ -1,15 +1,11 @@
-from networkx.classes import graph
 from streamlit_force_graph_simulator import st_graph, ForceGraphSimulation
 import streamlit as st
 
 import networkx as nx
 import numpy as np
-from networkx.readwrite import json_graph
 import json
 
 import random
-from collections import Counter
-import matplotlib.pyplot as plt
 
 
 ###################### functions ###########################
