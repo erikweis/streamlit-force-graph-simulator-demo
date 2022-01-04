@@ -112,3 +112,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+load_bitcoin_network.py
+soc-sign-bitcoinotc.csv.gz
