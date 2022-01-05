@@ -10,6 +10,21 @@ import ast
 
 import random
 
+# Use the non-interactive Agg backend, which is recommended as a
+# thread-safe backend.
+# See https://matplotlib.org/3.3.2/faq/howto_faq.html#working-with-threads.
+import matplotlib as mpl
+mpl.use("agg")
+
+##############################################################################
+# Workaround for the limited multi-threading support in matplotlib.
+# Per the docs, we will avoid using `matplotlib.pyplot` for figures:
+# https://matplotlib.org/3.3.2/faq/howto_faq.html#how-to-use-matplotlib-in-a-web-application-server.
+# Moreover, we will guard all operations on the figure instances by the
+# class-level lock in the Agg backend.
+##############################################################################
+from matplotlib.backends.backend_agg import RendererAgg
+_lock = RendererAgg.lock
 
 ###################### functions ###########################
 
