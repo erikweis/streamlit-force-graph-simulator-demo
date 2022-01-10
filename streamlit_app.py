@@ -172,7 +172,7 @@ for i in range(num_seed_nodes,100+num_seed_nodes):
     j = random.choice(list(G.nodes))
     F_pa.add_node(i)
     F_pa.add_edge(i,j,color=edge_color)
-    for neighbor in G[j]:
+    for neighbor in random.sample(list(G[j]),st.session_state.num_initial_friends):
         if random.random() < st.session_state.prob_link_rwm:
             F_pa.add_edge(i,random.choice(list(G[j])),color=edge_color)
         else:
